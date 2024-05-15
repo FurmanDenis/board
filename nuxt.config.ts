@@ -1,42 +1,62 @@
-import {env} from 'node:process'
-import {resolve} from 'node:path'
-export default {
-  ssr: false,
+import { defineNuxtConfig } from 'nuxt';
+import { resolve } from 'path';
 
+// Nuxt configuration
+export default defineNuxtConfig({
+  // Define the source directory
+  srcDir: resolve(__dirname, 'src'),
+
+  // Define the build directory
+  buildDir: resolve(__dirname, '.nuxt'),
+
+  // Global page headers
   head: {
-    title: "board",
-    htmlAttrs: {
-      lang: "en",
-    },
+    title: 'My Nuxt App',
     meta: [
-      { charset: "utf-8" },
-      { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { hid: "description", name: "description", content: "" },
-      { name: "format-detection", content: "telephone=no" },
+      { charset: 'utf-8' },
+      { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+      { hid: 'description', name: 'description', content: '' }
     ],
-    link: [{ rel: "icon", type: "image/x-icon", href: "/favicon.ico" }],
+    link: [
+      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
+    ]
   },
 
-
+  // Global CSS
   css: [],
 
+  // Plugins to run before rendering page
   plugins: [],
 
+  // Auto import components
   components: true,
 
+  // Modules for dev and build (recommended)
   buildModules: [
-    "@nuxtjs/tailwindcss",
+    // https://go.nuxtjs.dev/typescript
+    '@nuxt/typescript-build',
+    // https://go.nuxtjs.dev/tailwindcss
+    '@nuxtjs/tailwindcss',
   ],
 
-  // Modules: https://go.nuxtjs.dev/config-modules
-  modules: ["@nuxtjs/tailwindcss"],
+  // Modules
+  modules: [
+    // https://go.nuxtjs.dev/axios
+    '@nuxtjs/axios',
+  ],
 
-  // Build Configuration: https://go.nuxtjs.dev/config-build
-  build: {},
-  features: {
-    autoImports: true,
+  // Axios module configuration
+  axios: {
+    baseURL: '/', // Used as fallback if no runtime config is provided
   },
-  runtimeConfig: {
-    databasePath: resolve(env.DATABASE_PATH),
+
+  // Build configuration
+  build: {
+    // Extend webpack configuration
+    extend(config, { isDev, isClient }) {
+      if (isDev && isClient) {
+        config.devtool = 'source-map';
+      }
+    }
   }
-};
+});
