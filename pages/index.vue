@@ -1,7 +1,13 @@
 <template>
   <div class="p-6">
     <h1 class="text-3xl font-bold mb-6">Events</h1>
-    <div v-if="events && events.length > 0">
+    <div v-if="loading">
+      <p>Loading events...</p>
+    </div>
+    <div v-else-if="error">
+      <p class="text-red-500">Failed to load events: {{ error }}</p>
+    </div>
+    <div v-else-if="events && events.length > 0">
       <div class="w-full pb-10">
         <input
           type="text"
@@ -49,32 +55,39 @@
 </template>
 
 <script setup>
-import { computed, ref } from "vue";
+import { computed, ref, watch } from "vue";
 import EventCard from "~/components/EventCard.vue";
+
+const loading = ref(true);
+const error = ref(null);
 const events = ref([]);
-const { data } = await useAsyncData(() => $fetch('/api/events'), []);
-if(data){
-  events.value = data;
-}
 const itemsPerPage = 6;
 const currentPage = ref(1);
 const search = ref('');
 const sortBy = ref('title');
+
+try {
+  const { data } = await useAsyncData(() => $fetch('/api/events'), []);
+  events.value = data.value || [];
+} catch (err) {
+  error.value = err.message || 'An unknown error occurred';
+} finally {
+  loading.value = false;
+}
 
 const filteredEvents = computed(() => {
   if (!search.value) {
     return events.value;
   }
   return events.value.filter(event =>
-    event.title.toLowerCase().includes(search.value.toLowerCase())
+    event.title && event.title.toLowerCase().includes(search.value.toLowerCase())
   );
 });
 
 const sortedEvents = computed(() => {
-
-  return filteredEvents.value.sort((a, b) => {
+  return [...filteredEvents.value].sort((a, b) => {
     if (sortBy.value === 'title') {
-      return a.title.localeCompare(b.title); 
+      return (a.title || '').localeCompare(b.title || ''); 
     } else if (sortBy.value === 'date_start') {
       return new Date(b.date_start) - new Date(a.date_start);
     }
@@ -106,8 +119,6 @@ function resetPagination() {
 }
 
 watch([sortBy, search], () => {
-  resetPagination()
+  resetPagination();
 });
-
-
 </script>
