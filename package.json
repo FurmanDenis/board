@@ -18,5 +18,9 @@
   "devDependencies": {
     "@nuxtjs/tailwindcss": "^6.12.0",
     "postcss": "^8.4.17"
+  },
+  "engines": {
+    "node": "18.x",
+    "npm": "10.x"
   }
 }
