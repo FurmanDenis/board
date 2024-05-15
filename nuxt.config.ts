@@ -39,11 +39,8 @@ export default defineNuxtConfig({
     '@nuxtjs/tailwindcss',
   ],
 
-  // Modules
-  modules: [
-    // https://go.nuxtjs.dev/axios
-    '@nuxtjs/axios',
-  ],
+  modules: ["@nuxtjs/tailwindcss"],
+
 
   // Axios module configuration
   axios: {
