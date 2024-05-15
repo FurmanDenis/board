@@ -51,7 +51,11 @@
 <script setup>
 import { computed, ref } from "vue";
 import EventCard from "~/components/EventCard.vue";
-const { data: events } = await useAsyncData(() => $fetch('/api/events'), []);
+const events = ref([]);
+const { data } = await useAsyncData(() => $fetch('/api/events'), []);
+if(data){
+  events.value = data;
+}
 const itemsPerPage = 6;
 const currentPage = ref(1);
 const search = ref('');
@@ -67,6 +71,7 @@ const filteredEvents = computed(() => {
 });
 
 const sortedEvents = computed(() => {
+
   return filteredEvents.value.sort((a, b) => {
     if (sortBy.value === 'title') {
       return a.title.localeCompare(b.title); 
